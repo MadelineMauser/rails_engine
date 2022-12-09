@@ -48,8 +48,8 @@ describe "Merchants API" do
     merchant_params = {name: "Freddy Silver" }
     headers = {"CONTENT_TYPE" => "application/json"}
     
-    patch "/api/v1/merchant/#{id}", headers: headers, params: JSON.generate(merchant: merchant_params)
-    
+    patch "/api/v1/merchants/#{id}", headers: headers, params: JSON.generate(merchant: merchant_params)
+
     merchant = Merchant.find(id)
 
     expect(response).to be_successful
