@@ -2,7 +2,7 @@ require 'rails_helper'
 
 describe "Items API" do
   it "sends a list of all items" do
-    create_list(:items, 3)
+    create_list(:item, 3)
 
     get '/api/v1/items'
 
@@ -17,9 +17,9 @@ describe "Items API" do
       expect(item[:attributes]).to have_key(:name)
       expect(item[:attributes][:name]).to be_a(String)
       expect(item[:attributes]).to have_key(:description)
-      expect(item[:attributes][:name]).to be_a(String)
-      expect(item[:attributes]).to have_key(:price)
-      expect(item[:attributes][:name]).to be_a(Float)
+      expect(item[:attributes][:description]).to be_a(String)
+      expect(item[:attributes]).to have_key(:unit_price)
+      expect(item[:attributes][:unit_price]).to be_a(Float)
     end
   end
   it "sends one item by its id" do
@@ -31,23 +31,24 @@ describe "Items API" do
 
     item = JSON.parse(response.body, symbolize_names: true)
     
-    expect(item).to have_key(:id)
-    expect(item[:id]).to eq(id)
-
-    expect(item).to have_key(:name)
-    expect(item[:name]).to be_a(String)
-    expect(item[:attributes]).to have_key(:description)
-    expect(item[:attributes][:name]).to be_a(String)
-    expect(item[:attributes]).to have_key(:price)
-    expect(item[:attributes][:name]).to be_a(Float)
+    expect(item[:data]).to have_key(:id)
+    expect(item[:data][:id]).to eq("#{id}")
+    
+    expect(item[:data][:attributes]).to have_key(:name)
+    expect(item[:data][:attributes][:name]).to be_a(String)
+    expect(item[:data][:attributes]).to have_key(:description)
+    expect(item[:data][:attributes][:description]).to be_a(String)
+    expect(item[:data][:attributes]).to have_key(:unit_price)
+    expect(item[:data][:attributes][:unit_price]).to be_a(Float)
   end
   it "can create a new item" do
-    item_params = {name: 'Rubber Ball', description: 'A bouncy ball.', price: 1.05}
+    merchant_id = create(:merchant).id
+    item_params = {name: 'Rubber Ball', description: 'A bouncy ball.', unit_price: 1.05, merchant_id: merchant_id}
     headers = {"CONTENT_TYPE" => "application/json"}
     
     post "/api/v1/items", headers: headers, params: JSON.generate(item: item_params)
     created_item = Item.last
-    
+   
     expect(response).to be_successful
     expect(created_item.name).to eq(item_params[:name])
   end
