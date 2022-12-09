@@ -38,8 +38,22 @@ describe "Merchants API" do
     
     post "/api/v1/merchants", headers: headers, params: JSON.generate(merchant: merchant_params)
     created_merchant = Merchant.last
-
+    
     expect(response).to be_successful
     expect(created_merchant.name).to eq(merchant_params[:name])
+  end
+  it "can update a merchant" do
+    id = create(:merchant).id
+    previous_name = Merchant.last.name
+    merchant_params = {name: "Freddy Silver" }
+    headers = {"CONTENT_TYPE" => "application/json"}
+    
+    patch "/api/v1/merchant/#{id}", headers: headers, params: JSON.generate(merchant: merchant_params)
+    
+    merchant = Merchant.find(id)
+
+    expect(response).to be_successful
+    expect(merchant.name).to_not eq(previous_name)
+    expect(merchant.name).to eq(merchant_params[:name])
   end
 end
